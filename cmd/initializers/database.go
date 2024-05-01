@@ -1,6 +1,7 @@
 package initializers
 
 import (
+	"errors"
 	"github.com/RakhimovAns/URL-SHORTENER/model"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -31,21 +32,18 @@ func CreateTable() {
 	}
 }
 
-func IsLinkExists(linkToCheck string) (bool, model.Link, error) {
+func IsLinkExists(linkToCheck string) (bool, error) {
 	var l link
 	result := DB.Where("link = ?", linkToCheck).First(&l)
 	if result.Error != nil {
-		if result.Error == gorm.ErrRecordNotFound {
-			return false, model.Link{Link: l.Link, Short: l.Short}, nil
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return false, nil
 		}
-		return false, model.Link{Link: l.Link, Short: l.Short}, result.Error
+		return false, result.Error
 	}
-	return true, model.Link{Link: l.Link, Short: l.Short}, nil
+	return true, nil
 }
 
 func AddLink(l model.Link) {
 	DB.Create(&model.Link{Link: l.Link, Short: l.Short})
-}
-func UpdateLink(l model.Link) {
-	DB.Model(&link{}).Where("short = ?", l.Short).Updates(link{Link: l.Link, Short: l.Short})
 }

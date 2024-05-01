@@ -30,17 +30,12 @@ func GetLink(c *gin.Context) {
 	}
 	Hashed := HashString(link.Link)
 	link.Short = Hashed
-	IS, links, _ := initializers.IsLinkExists(link.Link)
-	if IS == false {
+	if exist, _ := initializers.IsLinkExists(link.Link); exist == false {
 		initializers.AddLink(link)
-		c.JSON(http.StatusOK, gin.H{"link": links.Short})
-		return
-	} else {
-		initializers.UpdateLink(link)
-		c.JSON(http.StatusOK, gin.H{"link": links.Short})
-		return
 	}
-	c.JSON(http.StatusOK, gin.H{"link": "https://localhost:8080/" + Hashed})
+	c.JSON(http.StatusOK, gin.H{"link": link.Short})
+	return
+	//c.JSON(http.StatusOK, gin.H{"link": "https://localhost:8080/" + Hashed})
 }
 
 func HashString(link string) string {
