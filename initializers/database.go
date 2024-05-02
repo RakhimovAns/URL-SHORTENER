@@ -47,3 +47,16 @@ func IsLinkExists(linkToCheck string) (bool, error) {
 func AddLink(l model.Link) {
 	DB.Create(&model.Link{Link: l.Link, Short: l.Short})
 }
+
+func GetAll() ([]model.Link, error) {
+	var links []link
+	result := DB.Find(&links)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	var modelLinks []model.Link
+	for _, l := range links {
+		modelLinks = append(modelLinks, model.Link{Link: l.Link, Short: l.Short})
+	}
+	return modelLinks, nil
+}

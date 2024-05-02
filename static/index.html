@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Shortener</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+        .container {
+            text-align: center;
+        }
+        input[type="text"] {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-right: 10px;
+            width: 300px;
+            max-width: 100%;
+        }
+        button[type="submit"] {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+        .shortened-link {
+            margin-top: 20px;
+            font-size: 18px;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>URL Shortener</h2>
+    <form id="shorten-form">
+        <input type="text" id="url-input" placeholder="Enter URL...">
+        <button type="submit">Shorten</button>
+    </form>
+    <div class="shortened-link" id="shortened-link" style="display: none;"></div>
+</div>
+
+<script>
+    document.getElementById("shorten-form").addEventListener("submit", function(event) {
+        event.preventDefault();
+        var url = document.getElementById("url-input").value;
+        fetch("/short", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                link: url
+            })
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById("shortened-link").textContent = "Shortened URL: " + window.location.href + data.link;
+                document.getElementById("shortened-link").style.display = "block";
+            })
+            .catch(error => console.error('Error:', error));
+    });
+
+</script>
+</body>
+</html>
